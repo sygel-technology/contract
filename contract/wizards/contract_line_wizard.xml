@@ -10,10 +10,6 @@
                 <group>
                     <field name="contract_line_id" invisible="True" />
                     <field string="Stop Date" name="date_end" required="True" />
-                    <field
-                        string="Is suspension without end date"
-                        name="manual_renew_needed"
-                    />
                 </group>
                 <footer>
                     <button
@@ -27,18 +23,18 @@
             </form>
         </field>
     </record>
-    <record model="ir.ui.view" id="contract_line_wizard_plan_successor_form_view">
+    <!-- VISTA INNECESARIA??? -->
+<!--     <record model="ir.ui.view" id="contract_line_wizard_form_view">
         <field
             name="name"
-        >contract.line.plan_successor.wizard.form (in contract)</field>
+        >contract.line.wizard.form (in contract)</field>
         <field name="model">contract.line.wizard</field>
         <field name="arch" type="xml">
             <form>
                 <group>
                     <field name="contract_line_id" invisible="True" />
                     <field name="date_start" required="True" />
-                    <field name="date_end" required="is_auto_renew" />
-                    <field name="is_auto_renew" />
+                    <field name="date_end" />
                 </group>
                 <footer>
                     <button
@@ -51,44 +47,9 @@
                 </footer>
             </form>
         </field>
-    </record>
-    <record model="ir.ui.view" id="contract_line_wizard_stop_plan_successor_form_view">
-        <field
-            name="name"
-        >contract.line.stop_plan_successor.wizard.form (in contract)</field>
-        <field name="model">contract.line.wizard</field>
-        <field name="arch" type="xml">
-            <form>
-                <group>
-                    <field name="contract_line_id" invisible="True" />
-                    <field
-                        string="Suspension Start Date"
-                        name="date_start"
-                        required="True"
-                    />
-                    <field
-                        string="Suspension End Date"
-                        name="date_end"
-                        required="True"
-                    />
-                    <field name="is_auto_renew" invisible="1" />
-                </group>
-                <footer>
-                    <button
-                        name="stop_plan_successor"
-                        string="Validate"
-                        class="btn-primary"
-                        type="object"
-                    />
-                    <button string="Cancel" class="btn-default" special="cancel" />
-                </footer>
-            </form>
-        </field>
-    </record>
+    </record> -->
     <record model="ir.ui.view" id="contract_line_wizard_uncancel_form_view">
-        <field
-            name="name"
-        >contract.line.stop_plan_successor.wizard.form (in contract)</field>
+        <field name="name">contract.line.wizard.uncancel.form.view</field>
         <field name="model">contract.line.wizard</field>
         <field name="arch" type="xml">
             <form>

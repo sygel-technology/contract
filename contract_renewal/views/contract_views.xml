@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Manuel Regidor <manuel.regidor@sygel.es>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="contract_contract_renewal_form_view" model="ir.ui.view">
+        <field name="name">contract.contract.renewal.form.view</field>
+        <field name="model">contract.contract</field>
+        <field name="inherit_id" ref="contract.contract_contract_form_view" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='contract_line_ids']//tree//field[@name='is_un_cancel_allowed']"
+                position="after"
+            >
+                <field name="is_auto_renew" column_invisible="True" />
+            </xpath>
+            <button name="action_uncancel" position="after">
+                <field name="manual_renew_needed" column_invisible="True" />
+                <button
+                    name="renew"
+                    string="Renew"
+                    type="object"
+                    icon="fa-fast-forward text-success"
+                    groups="base.group_no_one"
+                    invisible="not manual_renew_needed"
+                />
+            </button>
+        </field>
+    </record>
+</odoo>

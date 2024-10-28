@@ -6,7 +6,7 @@
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ContractTemplate(models.Model):
@@ -20,3 +20,10 @@ class ContractTemplate(models.Model):
         copy=True,
         string="Contract template lines",
     )
+
+    @api.onchange("contract_type")
+    def _onchange_contract_type(self):
+        if self.contract_type == "purchase":
+            self.contract_line_ids.filtered("automatic_price").update(
+                {"automatic_price": False}
+            )

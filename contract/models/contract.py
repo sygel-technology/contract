@@ -8,8 +8,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from markupsafe import Markup
-
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
@@ -101,7 +99,6 @@ class ContractContract(models.Model):
     partner_id = fields.Many2one(
         comodel_name="res.partner", inverse="_inverse_partner_id", required=True
     )
-
     commercial_partner_id = fields.Many2one(
         "res.partner",
         compute_sudo=True,
@@ -345,6 +342,13 @@ class ContractContract(models.Model):
                 contract.contract_line_ids.mapped("create_invoice_visibility")
             )
 
+    @api.onchange("contract_type")
+    def _onchange_contract_type(self):
+        if self.contract_type == "purchase":
+            self.contract_line_ids.filtered("automatic_price").update(
+                {"automatic_price": False}
+            )
+
     @api.onchange("contract_template_id")
     def _onchange_contract_template_id(self):
         """Update the contract fields with that of the template.
@@ -402,7 +406,6 @@ class ContractContract(models.Model):
             vals["date_start"] = fields.Date.context_today(contract_line)
             vals["recurring_next_date"] = fields.Date.context_today(contract_line)
             new_lines += contract_line_model.new(vals)
-        new_lines._onchange_is_auto_renew()
         return new_lines
 
     def _prepare_invoice(self, date_invoice, journal=None):
@@ -426,13 +429,12 @@ class ContractContract(models.Model):
         if not journal:
             raise ValidationError(
                 _(
-                    "Please define a %(contract_type)s journal "
-                    "for the company '%(company)s'."
+                    "Please define a {contract_type} journal "
+                    "for the company {company}."
+                ).format(
+                    contract_type=self.contract_type,
+                    company=self.company_id.name or "",
                 )
-                % {
-                    "contract_type": self.contract_type,
-                    "company": self.company_id.name or "",
-                }
             )
         invoice_type = (
             "in_invoice" if self.contract_type == "purchase" else "out_invoice"
@@ -589,10 +591,19 @@ class ContractContract(models.Model):
         """
         invoices = self._recurring_create_invoice()
         for invoice in invoices:
-            body = Markup(_("Contract manually invoiced: %(invoice_link)s")) % {
-                "invoice_link": invoice._get_html_link(title=invoice.name)
-            }
-            self.message_post(body=body)
+            self.message_post(
+                body=_(
+                    "Contract manually invoiced: "
+                    "<a"
+                    '    href="#" data-oe-model="{model_name}" '
+                    '    data-oe-id="{rec_id}"'
+                    ">Invoice"
+                    "</a>"
+                ).format(
+                    model_name=invoice._name,
+                    rec_id=invoice.id,
+                )
+            )
         return invoices
 
     @api.model
@@ -613,11 +624,20 @@ class ContractContract(models.Model):
     def _add_contract_origin(self, invoices):
         for item in self:
             for move in invoices & item._get_related_invoices():
-                body = Markup(_("%(msg)s by contract: %(contract_link)s")) % {
-                    "msg": move._creation_message(),
-                    "contract_link": move._get_html_link(title=item.display_name),
-                }
-                move.message_post(body=body)
+                move.message_post(
+                    body=(
+                        _(
+                            (
+                                "%(msg)s by contract <a href=#"
+                                " data-oe-model=contract.contract"
+                                " data-oe-id=%(contract_id)d>%(contract)s</a>."
+                            ),
+                            msg=move._creation_message(),
+                            contract_id=item.id,
+                            contract=item.display_name,
+                        )
+                    )
+                )
 
     def _recurring_create_invoice(self, date_ref=False):
         invoices_values = self._prepare_recurring_invoices_values(date_ref)

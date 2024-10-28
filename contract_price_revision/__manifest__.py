@@ -11,7 +11,7 @@
     "author": "ACSONE SA/NV, Tecnativa, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/contract",
-    "depends": ["contract"],
+    "depends": ["contract_line_successor"],
     "data": [
         "security/ir.model.access.csv",
         "views/contract_line.xml",

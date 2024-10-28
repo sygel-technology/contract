@@ -1,0 +1,3 @@
+When the "Create New Line At Contract Line Renew" option in invoicing settings is active, a new contract line will be automatically created when an existing line is renewed. The "Date End" field in the successor contract line will be set based on the values set in the "Renew Every" field.
+
+The module also allows to suspend contract lines for a given period. To do that, click on the "Stop Plan Successor" button in the contract line and select the start and end dates of the suspensions. The end date in the current contract line will be set to the date selected and a new contract line starting after the suspension period will be created.

@@ -89,6 +89,7 @@ class ContractRecurrencyMixin(models.AbstractModel):
         string="Next Period End",
         compute="_compute_next_period_date_end",
     )
+
     last_date_invoiced = fields.Date(readonly=True, copy=False)
 
     @api.depends("next_period_date_start")

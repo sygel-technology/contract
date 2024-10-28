@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Manuel Regidor <manuel.regidor@sygel.es>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="contract_renewal_abstract_contract_line_form_view" model="ir.ui.view">
+        <field name="name">contract.renewal.abstract.contract.line.form.view"</field>
+        <field name="model">contract.abstract.contract.line</field>
+        <field
+            name="inherit_id"
+            ref="contract.contract_abstract_contract_line_form_view"
+        />
+        <field name="arch" type="xml">
+            <field name="is_canceled" position="before">
+                <field name="is_auto_renew" />
+            </field>
+            <group name="termination_notice" position="attributes">
+                <attribute
+                    name="invisible"
+                >not is_auto_renew or display_type</attribute>
+            </group>
+            <group name="termination_notice" position="inside">
+                <group>
+                    <label for="auto_renew_interval" />
+                    <div class="o_row">
+                        <field
+                            name="auto_renew_interval"
+                            class="oe_inline"
+                            required="is_auto_renew"
+                        />
+                        <field
+                            name="auto_renew_rule_type"
+                            class="oe_inline"
+                            required="is_auto_renew"
+                        />
+                    </div>
+                </group>
+            </group>
+            <field name="termination_notice_interval" position="attributes">
+                <attribute name="required">is_auto_renew</attribute>
+            </field>
+            <field name="termination_notice_rule_type" position="attributes">
+                <attribute name="required">is_auto_renew</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

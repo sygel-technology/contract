@@ -19,7 +19,9 @@ class ContractAbstractContractLine(models.AbstractModel):
     product_id = fields.Many2one("product.product", string="Product")
 
     name = fields.Text(string="Description", required=True)
-    quantity = fields.Float(default=1.0, required=True)
+    quantity = fields.Float(
+        default=1.0, digits="Product Unit of Measure", required=True
+    )
     product_uom_category_id = fields.Many2one(  # Used for domain of field uom_id
         comodel_name="uom.category",
         related="product_id.uom_id.category_id",
@@ -43,10 +45,10 @@ class ContractAbstractContractLine(models.AbstractModel):
         string="Unit Price",
         compute="_compute_price_unit",
         inverse="_inverse_price_unit",
+        digits="Product Price",
     )
     price_subtotal = fields.Monetary(
-        compute="_compute_price_subtotal",
-        string="Sub Total",
+        compute="_compute_price_subtotal", string="Sub Total", digits="Product Price"
     )
     discount = fields.Float(
         string="Discount (%)",
@@ -87,23 +89,6 @@ class ContractAbstractContractLine(models.AbstractModel):
     )
     last_date_invoiced = fields.Date()
     is_canceled = fields.Boolean(string="Canceled", default=False)
-    is_auto_renew = fields.Boolean(string="Auto Renew", default=False)
-    auto_renew_interval = fields.Integer(
-        default=1,
-        string="Renew Every",
-        help="Renew every (Days/Week/Month/Year)",
-    )
-    auto_renew_rule_type = fields.Selection(
-        [
-            ("daily", "Day(s)"),
-            ("weekly", "Week(s)"),
-            ("monthly", "Month(s)"),
-            ("yearly", "Year(s)"),
-        ],
-        default="yearly",
-        string="Renewal type",
-        help="Specify Interval for automatic renewal.",
-    )
     termination_notice_interval = fields.Integer(
         default=1, string="Termination Notice Before"
     )
@@ -136,6 +121,7 @@ class ContractAbstractContractLine(models.AbstractModel):
         "- Custom: Depending on the recurrence to be define.",
     )
     is_recurring_note = fields.Boolean(compute="_compute_is_recurring_note")
+
     company_id = fields.Many2one(related="contract_id.company_id", store=True)
 
     def _set_recurrence_field(self, field):

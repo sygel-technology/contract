@@ -1,0 +1,1 @@
+This module extends contract_renewal module to allow to create a new contract line when a contract line is renewed, instead of extending the end date of the line to renew.

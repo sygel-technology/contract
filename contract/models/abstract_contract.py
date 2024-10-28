@@ -60,23 +60,16 @@ class ContractAbstractContract(models.AbstractModel):
     def _default_generation_type(self):
         return "invoice"
 
-    @api.onchange("contract_type")
-    def _onchange_contract_type(self):
-        if self.contract_type == "purchase":
-            self.contract_line_ids.filtered("automatic_price").update(
-                {"automatic_price": False}
-            )
-
     @api.depends("contract_type", "company_id")
     def _compute_journal_id(self):
         AccountJournal = self.env["account.journal"]
         for contract in self:
+            journal_id = False
             domain = [
                 ("type", "=", contract.contract_type),
                 ("company_id", "=", contract.company_id.id),
             ]
             journal = AccountJournal.search(domain, limit=1)
             if journal:
-                contract.journal_id = journal.id
-            else:
-                contract.journal_id = None
+                journal_id = journal.id
+            contract.journal_id = journal_id

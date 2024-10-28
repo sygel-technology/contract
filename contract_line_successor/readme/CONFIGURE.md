@@ -1,0 +1,1 @@
+To use the features provided by this module, you need to go to Invoicing > Configuration > Settings and activate the "Create New Line At Contract Line Renew" option under the "Contract" section.
